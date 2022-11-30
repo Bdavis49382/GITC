@@ -29,7 +29,7 @@
         "maze_pos":[0,3]
     },
     "stairs": {
-        "type":"Stair",
+        "type":"Stairs",
         "file_name":"stairs_mid",
         "maze_pos":[4,4]
     },

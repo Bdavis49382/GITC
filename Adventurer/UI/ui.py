@@ -20,6 +20,33 @@ class UI:
         sprites_list.draw(self._screen)
 
         pygame.display.flip()
+    
+    def refresh_game_over_screen(self):
+        self._screen.fill(GRAY)
+        white = (255, 255, 255)
+        green = (0, 255, 0)
+        blue = (0, 0, 128)
+        
+        # assigning values to X and Y variable
+        X = 400
+        Y = 400
+        
+        # create the display surface object
+        # of specific dimension..e(X, Y).
+        # display_surface = pygame.display.set_mode((X, Y))
+        
+        
+        font = pygame.font.Font('freesansbold.ttf', 50)
+        
+        text = font.render('Game Over', True, white, blue)
+        
+        textRect = text.get_rect()
+        
+        textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+
+        self._screen.blit(text, textRect)
+
+        pygame.display.flip()
         
     
 
