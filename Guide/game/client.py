@@ -16,7 +16,7 @@ class Client():
         if response == '1':
             self.client.connect(('10.11.6.55', PORT))
         elif response == '2':
-            self.client.connect(('10.244.6.55', PORT))
+            self.client.connect(('10.244.254.229', PORT))
         elif response == '3':
             self.client.connect(('10.10.7.82', PORT))
         else:

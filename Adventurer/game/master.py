@@ -19,7 +19,7 @@ class Master:
             'game_objects': self.saved_game_objects}
             )
         self.game_over = False
-        self.GUI = UI()
+        self.GUI = UI(self)
         self.current_sprites_list = pygame.sprite.Group()
         self.player = Player((MAP_COLUMNS//2,MAP_ROWS//2),self)
         self.all_game_objects = {}
@@ -83,6 +83,12 @@ class Master:
                             player.move_up(self.map)
                         case pygame.K_s:
                             player.move_down(self.map)
+                case pygame.MOUSEBUTTONDOWN:
+                    if self.GUI.click_respawn():
+                        self.game_over = False
+                        self.player.maze_pos = [ 0 , 0]
+                        self.new_room()
+                            
 
         return done
     
@@ -101,7 +107,9 @@ class Master:
                     print('Game Over')
                     self.game_over = True
                 case 'Item':
-                    print(f"You now have a {self.all_game_objects[object_key].name}")
+                    name = self.all_game_objects[object_key].name
+                    print(f"You now have a {name}")
+                    self.player.inventory.append(name)
                     self.all_game_objects[object_key].maze_pos = [-1,-1]
                     self.server.data['game_objects'][object_key]['maze_pos'] = [-1,-1]
                 case 'Stairs':

@@ -1,19 +1,22 @@
 import json
 import pygame
 import constants
+from constants import WHITE,BLACK,RED
 from constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH, GRAY,MAP_COLUMNS,MAP_ROWS
 
 class UI:
     pygame.init()
-    def __init__(self) -> None:
+    def __init__(self,master) -> None:
         self._screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
         pygame.display.set_caption("GITC")
+        self.master = master
         self.map = []
     
     def refresh_screen(self,sprites_list):
         self._screen.fill(GRAY)
 
         self.draw_background()
+        self.draw_footer()
 
         sprites_list.update()
 
@@ -23,34 +26,33 @@ class UI:
     
     def refresh_game_over_screen(self):
         self._screen.fill(GRAY)
-        white = (255, 255, 255)
-        green = (0, 255, 0)
-        blue = (0, 0, 128)
-        
-        # assigning values to X and Y variable
-        X = 400
-        Y = 400
-        
-        # create the display surface object
-        # of specific dimension..e(X, Y).
-        # display_surface = pygame.display.set_mode((X, Y))
-        
+        self.draw_background()
         
         font = pygame.font.Font('freesansbold.ttf', 50)
-        
-        text = font.render('Game Over', True, white, blue)
-        
+        text = font.render('Game Over', True, WHITE, BLACK)
         textRect = text.get_rect()
-        
         textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self._screen.blit(text, textRect)
 
+        font = pygame.font.Font('freesansbold.ttf', 20)
+        text = font.render('Respawn', True, RED, BLACK)
+        textRect = text.get_rect()
+        textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + SCREEN_HEIGHT // 4)
         self._screen.blit(text, textRect)
 
         pygame.display.flip()
         
-    
+    def click_respawn(self):
+        mouse = pygame.mouse.get_pos()
+        return SCREEN_WIDTH//2-50 <= mouse[0] <= SCREEN_WIDTH//2+50 and SCREEN_HEIGHT//2+SCREEN_HEIGHT//4-20 <= mouse[1] <= SCREEN_HEIGHT//2+SCREEN_HEIGHT//4+20
 
-
+    def draw_footer(self):
+        font = pygame.font.Font('freesansbold.ttf', 20)
+        text = font.render(f'Inventory:{",".join(self.master.player.inventory)}', True, WHITE, BLACK)
+        textRect = text.get_rect()
+        textRect.left = 10
+        textRect.top = TILE_SIZE*MAP_ROWS
+        self._screen.blit(text, textRect)
 
     def draw_background(self):
         tiles = {

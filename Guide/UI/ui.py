@@ -11,7 +11,7 @@ class UI:
         self.map = []
         self.master = master
         self.client = client
-        self.load_file()
+        self.load_files()
     
     def refresh_screen(self,sprites_list):
         self._screen.fill(GRAY)
@@ -24,13 +24,9 @@ class UI:
 
         pygame.display.flip()
         
-    def load_file(self):
+    def load_files(self):
         self.map = self.client.send('rqst,room')
         self.big_map = self.client.send('rqst,maze')
-        # with open('Guide/UI/big_map.json','r') as room_file:
-        #     rooms = json.load(room_file)
-        #     self.map = rooms['room']
-        #     return rooms['maze']
 
 
 

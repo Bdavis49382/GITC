@@ -19,8 +19,10 @@ class Master:
             object = server_game_objects[object_key]
             if object['type'] == 'Player':
                 self.all_game_objects[object_key] = Player(object['maze_pos'],self)
+            elif object['type'] == 'Item':
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],pos=1,filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
             else:
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],pos=2,filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
             
             self.all_sprites_list.add(self.all_game_objects[object_key])
     

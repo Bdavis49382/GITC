@@ -13,6 +13,7 @@ class Player(Game_object):
         self.rect.y = pos[1]*TILE_SIZE
         self.master = master
         self.maze_pos = maze_pos
+        self.inventory = []
     
     
     def will_collide(self,pos,map):
