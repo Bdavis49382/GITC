@@ -1,0 +1,42 @@
+{
+    "player": {
+        "type":"Player",
+        "maze_pos":[0,0]
+    },
+    "black_knight1": {
+        "type":"Enemy",
+        "file_name": "monster_dark_knight",
+        "maze_pos":[3,3]
+    },
+    "ogre1": {
+        "type":"Enemy",
+        "file_name": "monster_ogre",
+        "maze_pos":[1,1]
+    },
+    "tentackle1": {
+        "type":"Enemy",
+        "file_name":  "monster_tentackle",
+        "maze_pos":[0,4]
+    },
+    "necromancer1": {
+        "type":"Enemy",
+        "file_name": "monster_necromancer",
+        "maze_pos":[4,3]
+    },
+    "necromancer2": {
+        "type":"Enemy",
+        "file_name": "monster_necromancer",
+        "maze_pos":[0,3]
+    },
+    "stairs": {
+        "type":"Stair",
+        "file_name":"stairs_mid",
+        "maze_pos":[4,4]
+    },
+    "sword1": {
+        "type":"Item",
+        "file_name":"weapon_sword_small",
+        "maze_pos":[4,2],
+        "name":"Wooden Sword"
+    }
+}

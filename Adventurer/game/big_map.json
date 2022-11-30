@@ -1,0 +1,15 @@
+{
+    "room": [
+        ["wall","wall","wall","wall","wall"],
+        ["wall","floor","floor","floor","wall"],
+        ["wall","floor","floor","floor","wall"],
+        ["wall","floor","floor","floor","wall"],
+        ["wall","wall","wall","wall","wall"]
+    ],
+  "maze":  [["RIGHT", "LEFT,BOTTOM", "BOTTOM,RIGHT", "LEFT,BOTTOM,RIGHT", "LEFT,BOTTOM"],
+ ["BOTTOM,RIGHT", "TOP,LEFT,BOTTOM", "TOP,BOTTOM,RIGHT", "TOP,LEFT,BOTTOM", "TOP,BOTTOM"], 
+ ["TOP,BOTTOM,RIGHT", "TOP,LEFT", "TOP,BOTTOM", "TOP,BOTTOM", "TOP,BOTTOM"], 
+ ["TOP,RIGHT", "LEFT,BOTTOM", "TOP,BOTTOM", "TOP,BOTTOM", "TOP,BOTTOM"], 
+ ["RIGHT", "TOP,LEFT,RIGHT", "TOP,LEFT,RIGHT", "TOP,LEFT", "TOP"]
+ ]
+}

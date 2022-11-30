@@ -1,7 +1,8 @@
 from UI.ui import UI
 from game.game_object import Game_object
 from game.player import Player
-from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS
+from game.client import Client
+from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS,ITEM_FILE_PATH
 import random
 import json
 import pygame
@@ -9,24 +10,20 @@ import pygame
 class Master:
 
     def __init__(self) -> None:
-        self.rooms = self.load_file()
-        self.GUI = UI()
-        self.new_room()
+        self.client = Client()
+        self.GUI = UI(self,self.client)
         self.all_sprites_list = pygame.sprite.Group()
-        player = Player((MAP_COLUMNS//2,MAP_ROWS//2),self)
-        self.all_game_objects = {'player':player}
-        self.all_sprites_list.add(player)
-        self.all_sprites_list.add(Game_object((8,16)))
+        server_game_objects = self.client.send('rqst,game_objects')
+        self.all_game_objects = {}
+        for object_key in server_game_objects:
+            object = server_game_objects[object_key]
+            if object['type'] == 'Player':
+                self.all_game_objects[object_key] = Player(object['maze_pos'],self)
+            else:
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+            
+            self.all_sprites_list.add(self.all_game_objects[object_key])
     
-    def load_file(self):
-        with open('Adventurer/UI/rooms.json','r') as room_file:
-            rooms = json.load(room_file)
-            return rooms['rooms']
-    def new_room(self):
-        room = random.choice(self.rooms)
-        self.make_doors(room,['TOP','LEFT','BOTTOM'])
-        self.map = room
-        self.GUI.map = room
 
     
     def make_doors(self,room,entrances):
@@ -46,13 +43,13 @@ class Master:
                         case pygame.K_x:
                             done = True
                         case pygame.K_a:
-                            player.move_left(self.map)
+                            pass
                         case pygame.K_d:
-                            player.move_right(self.map)
+                            pass
                         case pygame.K_w:
-                            player.move_up(self.map)
+                            pass
                         case pygame.K_s:
-                            player.move_down(self.map)
+                            pass
 
         return done
     
@@ -65,12 +62,15 @@ class Master:
         while not done:
             done = self.detect_events(pygame.event.get())
             self.GUI.refresh_screen(self.all_sprites_list)
+            self.update_values()
 
-
-            clock.tick(60)
+            clock.tick(30)
+        self.client.send("!DISCONNECT")
         pygame.quit()
     
+    def update_values(self):
+        server_game_objects = self.client.send('rqst,game_objects')
+        for object_key in self.all_game_objects:
+            self.all_game_objects[object_key].update_maze_pos(server_game_objects[object_key]['maze_pos'])
+    
         
-        
-
-
