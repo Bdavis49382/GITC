@@ -6,7 +6,7 @@ The idea of making a multiplayer game using python sockets and pygame has intrig
 
 {Provide a link to your YouTube demonstration.  It should be a 4-5 minute demo of the game being played and a walkthrough of the code.}
 
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/_VivRLZpdBE)
 
 # Development Environment
 
@@ -32,7 +32,7 @@ This game was developed in visual studio code in the python programming language
 
 After cloning the repository on both you and your friend's computers, you will need to follow these steps.
 
-* Make Sure that pygame is installed. [Instructions](https://www.pygame.org/wiki/GettingStarted)
+* Make sure that pygame is installed. [Instructions](https://www.pygame.org/wiki/GettingStarted)
 * Have the first player open to the GITC folder and run this command: `Adventurer/main.py`
 * The player can enter the pause menu by pressing esc, and then select start server
 * Now the other player can open to the GITC folder and run this command: `Guide/main.py`
