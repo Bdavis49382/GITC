@@ -25,6 +25,8 @@ class Master:
                 self.all_game_objects[object_key] = Game_object(object['maze_pos'],pos=2,filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
             
             self.all_sprites_list.add(self.all_game_objects[object_key])
+
+        self.done = False
     
 
     
@@ -58,11 +60,10 @@ class Master:
 
 
     def start_game(self):
-        done = False
         clock = pygame.time.Clock()
 
-        while not done:
-            done = self.detect_events(pygame.event.get())
+        while not self.done:
+            self.done = self.detect_events(pygame.event.get())
             self.GUI.refresh_screen(self.all_sprites_list)
             self.update_values()
 
@@ -71,8 +72,15 @@ class Master:
         pygame.quit()
     
     def update_values(self):
-        server_game_objects = self.client.send('rqst,game_objects')
-        for object_key in self.all_game_objects:
-            self.all_game_objects[object_key].update_maze_pos(server_game_objects[object_key]['maze_pos'])
-    
+        if self.client.send('rqst,still_running'):
+            server_game_objects = self.client.send('rqst,game_objects')
+
+            for object_key in server_game_objects:
+                if object_key in self.all_game_objects:
+                    self.all_game_objects[object_key].update_maze_pos(server_game_objects[object_key]['maze_pos'])
+                else:
+                    self.all_game_objects[object_key] = Game_object(server_game_objects[object_key]['maze_pos'],pos=2,filename=f"0x72_16x16DungeonTileset.v5/items/{server_game_objects[object_key]['file_name']}.png")
+                    self.all_sprites_list.add(self.all_game_objects[object_key])
+        else:
+           self.done = True 
         

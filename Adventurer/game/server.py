@@ -55,11 +55,9 @@ class Server():
     def start(self):
         server.listen()
         print(f"[LISTENING] Server is listening on {SERVER} ")
-        while True:
-            self.conn, addr = server.accept()
-            thread = threading.Thread(target=self.handle_client, args=(self.conn, addr))
-            thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.active_count() -1}")
-        print('ended')
+        # while True:
+        self.conn, addr = server.accept()
+        thread = threading.Thread(target=self.handle_client, args=(self.conn, addr))
+        thread.start()
                 
 

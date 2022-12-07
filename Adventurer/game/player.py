@@ -14,6 +14,7 @@ class Player(Game_object):
         self.master = master
         self.maze_pos = maze_pos
         self.inventory = []
+        self.path_taken = [self.maze_pos]
     
     
     def will_collide(self,pos,map):

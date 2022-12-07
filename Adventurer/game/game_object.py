@@ -2,7 +2,7 @@ from constants import WHITE,TILE_SIZE,MAP_COLUMNS,MAP_ROWS
 import pygame
 class Game_object(pygame.sprite.Sprite):
 
-    def __init__(self,maze_pos,type,name='',pos=(MAP_COLUMNS//2,MAP_ROWS//2),filename='') -> None:
+    def __init__(self,maze_pos,type,path=[],name='',pos=(MAP_COLUMNS//2,MAP_ROWS//2),filename='') -> None:
         super().__init__()
         if filename != '':
             self.image = pygame.image.load(filename).convert_alpha()
@@ -17,6 +17,9 @@ class Game_object(pygame.sprite.Sprite):
         self.type = type
         self.name = name
         self.maze_pos = maze_pos
+        self.file_name = filename
+        self.path = path
+        self.path_pos = 0
 
         self.tile_pos = pos
         self.rect.x = pos[0]*TILE_SIZE
