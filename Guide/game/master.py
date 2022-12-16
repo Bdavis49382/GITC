@@ -4,7 +4,7 @@ from game.player import Player
 import sys
 sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
 from client import Client
-from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS,ITEM_FILE_PATH
+from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS
 import random
 import json
 import pygame
@@ -22,9 +22,9 @@ class Master:
             if object['type'] == 'Player':
                 self.all_game_objects[object_key] = Player(object['maze_pos'],self)
             elif object['type'] == 'Item':
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],pos=1,filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                self.all_game_objects[object_key] = Game_object(object['type'],object['maze_pos'],pos=1,filename=object['file_name'])
             else:
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],pos=2,filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                self.all_game_objects[object_key] = Game_object(object['type'],object['maze_pos'],pos=2,filename=object['file_name'])
             
             self.all_sprites_list.add(self.all_game_objects[object_key])
 
@@ -80,8 +80,14 @@ class Master:
             for object_key in server_game_objects:
                 if object_key in self.all_game_objects:
                     self.all_game_objects[object_key].update_maze_pos(server_game_objects[object_key]['maze_pos'])
+                    self.all_game_objects[object_key].type = server_game_objects[object_key]['type']
+                    if self.all_game_objects[object_key].file_name != server_game_objects[object_key]['file_name']:
+                        self.all_game_objects[object_key].load_image(server_game_objects[object_key]['file_name'])
+                    # if object_key == 'chest1':
+                    #     print(self.all_game_objects[object_key].file_name)
+
                 else:
-                    self.all_game_objects[object_key] = Game_object(server_game_objects[object_key]['maze_pos'],pos=2,filename=f"0x72_16x16DungeonTileset.v5/items/{server_game_objects[object_key]['file_name']}.png")
+                    self.all_game_objects[object_key] = Game_object(server_game_objects[object_key]['type'],server_game_objects[object_key]['maze_pos'],pos=2,filename=server_game_objects[object_key]['file_name'])
                     self.all_sprites_list.add(self.all_game_objects[object_key])
         else:
            self.done = True 

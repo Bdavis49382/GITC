@@ -2,6 +2,9 @@ import json
 import pygame
 import copy
 from constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH, GRAY,MAP_COLUMNS,MAP_ROWS,GRID_COLUMNS,GRID_ROWS,ENTRANCE
+import sys
+sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
+from tilemap import Tilemap
 
 class UI:
     pygame.init()
@@ -12,6 +15,16 @@ class UI:
         self.master = master
         self.client = client
         self.load_files()
+        self.background_tile_maps = []
+        self.create_background()
+        
+    def create_background(self):
+        for big_y in range(GRID_COLUMNS):
+            self.background_tile_maps.append([])
+            for big_x in range(GRID_ROWS):
+                room = self.make_doors(self.big_map[big_y][big_x].split(','))
+                self.background_tile_maps[big_y].append(Tilemap(self._screen,room,tile_size=TILE_SIZE,offset=[big_x*TILE_SIZE*MAP_COLUMNS,big_y*TILE_SIZE*MAP_ROWS],size=[MAP_COLUMNS,MAP_ROWS]))
+
     
     def refresh_screen(self,sprites_list):
         self._screen.fill(GRAY)
@@ -28,21 +41,10 @@ class UI:
         self.map = self.client.send('rqst,room')
         self.big_map = self.client.send('rqst,maze')
 
-
-
     def draw_background(self):
-        tiles = {
-            'floor': pygame.image.load('0x72_16x16DungeonTileset.v5/items/floor_plain.png').convert_alpha(),
-            'wall': pygame.image.load('0x72_16x16DungeonTileset.v5/items/wall_left.png').convert_alpha()
-        }
-        for key in tiles:
-            tiles[key] = pygame.transform.scale(tiles[key], (TILE_SIZE,TILE_SIZE))
-        for big_y in range(GRID_COLUMNS):
-            for big_x in range(GRID_ROWS):
-                room = self.make_doors(self.big_map[big_y][big_x].split(','))
-                for y in range(MAP_ROWS):
-                    for x in range(MAP_COLUMNS):
-                        self._screen.blit(tiles[room[y][x]],(x*TILE_SIZE+big_x*MAP_COLUMNS*TILE_SIZE,y*TILE_SIZE+big_y*MAP_ROWS*TILE_SIZE))
+        for tilemap_row in self.background_tile_maps:
+            for tilemap in tilemap_row:
+                tilemap.draw_tiles()
 
     def make_doors(self,entrances):
         room = copy.deepcopy(self.map)

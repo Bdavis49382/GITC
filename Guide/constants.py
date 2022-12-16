@@ -16,6 +16,7 @@ GRAY = (100,100,100)
 WHITE = ( 255, 255, 255)
 GREEN = ( 0, 255, 0)
 RED = ( 255, 0, 0)
-ITEM_FILE_PATH = "0x72_16x16DungeonTileset.v5/items/{item}.png"
+
+TEXTURE_REFERENCE = "0x72_16x16DungeonTileset.v5/items/{0}.png"
 
 ENTRANCE = {'BOTTOM':(MAP_COLUMNS//2,MAP_ROWS-1),'TOP':(MAP_COLUMNS//2,0),'RIGHT':(MAP_COLUMNS-1,MAP_ROWS//2),'LEFT':(0,MAP_ROWS//2)}

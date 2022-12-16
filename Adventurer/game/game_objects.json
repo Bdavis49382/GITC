@@ -1,6 +1,7 @@
 {
     "player": {
         "type":"Player",
+        "file_name": "npc_elf",
         "maze_pos":[0,0]
     },
     "black_knight1": {

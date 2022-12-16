@@ -15,7 +15,7 @@ class Master:
     def __init__(self) -> None:
         self.load_files()
         self.game_state = 'start'
-        self.server = None
+        self.server = None  # TODO: change this so it can collect data but launch later
         self.GUI = UI(self)
         self.current_sprites_list = pygame.sprite.Group()
         self.all_game_objects = {}
@@ -31,19 +31,18 @@ class Master:
             object = self.saved_game_objects[object_key]
             if 'tile_pos' in object:
                 pos = object['tile_pos']
-                print(pos)
             else:
                 pos = DEFAULT_POS
             if object['type'] == 'Player':
                 self.all_game_objects[object_key] = Player(object['maze_pos'],self,pos=pos)
                 self.player = self.all_game_objects[object_key]
             elif object['type'] == 'Item':
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=TEXTURE_REFERENCE.format(object['file_name']))
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=object['file_name'])
             else:
                 if 'path' in object:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=TEXTURE_REFERENCE.format(object['file_name']))
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=object['file_name'])
                 else:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=TEXTURE_REFERENCE.format(object['file_name']))
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=object['file_name'])
             
             if object['maze_pos'] == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
@@ -82,7 +81,7 @@ class Master:
         self.move_objects_along_paths()                
 
         self.map = room
-        self.GUI.map = room
+        self.GUI.background_tile_map.map = room
     
     def move_objects_along_paths(self):
         for object_key in self.all_game_objects:
@@ -98,15 +97,13 @@ class Master:
                         self.server.data['game_objects'][object_key]['maze_pos'] = object.maze_pos
                     else:
                         self.server.data['game_objects'][object_key] = {'type':object.type,
-                                                                'file_name':self.strip_file_name(object.file_name),
+                                                                'file_name':object.file_name,
                                                                 'maze_pos':object.maze_pos,
                                                                 'path':object.path} #might have bug later with objects that don't have a path but will work for now.
 
-    def strip_file_name(self,full_file_name):
-        return full_file_name[full_file_name.rfind('/')+1:full_file_name.rfind('.')]
 
     def spawn_demon(self):
-        self.all_game_objects['demon'] = Game_object([0,0],'Enemy',path=self.player.path_taken,filename="0x72_16x16DungeonTileset.v5/items/monster_demon.png")
+        self.all_game_objects['demon'] = Game_object([0,0],'Enemy',path=self.player.path_taken,filename="monster_demon")
         if self.server:
             self.server.data['game_objects']['demon'] = {'type':'Enemy',
                                                     'file_name':'monster_demon',
@@ -159,10 +156,12 @@ class Master:
                         if self.GUI.clicked_button1():
                             self.game_state = 'normal'
                         elif self.GUI.clicked_button2():
-                            with open('Adventurer/game/saved_game_objects.json') as saved_game_objects:
-                                self.saved_game_objects = json.load(saved_game_objects)
+                            with open('Adventurer/game/saved_game_objects.json') as save_file:
+                                saved_data = json.load(save_file)
+                                self.saved_game_objects = saved_data['game_objects']
                                 self.load_game_objects()
                                 self.new_room()
+                                self.player.inventory = saved_data['inventory']
                             self.game_state = 'normal'
                         elif self.GUI.clicked_button3():
                             done = True
@@ -180,12 +179,12 @@ class Master:
                 self.all_game_objects[object_key] = Player(object['maze_pos'],self)
                 self.player = self.all_game_objects[object_key]
             elif object['type'] == 'Item':
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=TEXTURE_REFERENCE.format(object['file_name']))
             else:
                 if 'path' in object:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=TEXTURE_REFERENCE.format(object['file_name']))
                 else:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=TEXTURE_REFERENCE.format(object['file_name']))
             
             if object['maze_pos'] == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
@@ -216,16 +215,18 @@ class Master:
                     print(f"You now have a {name}")
                     self.player.inventory.append(name)
                     self.all_game_objects[object_key].maze_pos = [-1,-1]
-                    self.server.data['game_objects'][object_key]['maze_pos'] = [-1,-1]
+                    if self.server:
+                        self.server.data['game_objects'][object_key]['maze_pos'] = [-1,-1]
                 case 'Stairs':
                     print('You have made it to the next level')
                     self.player.maze_pos = [ 0 , 0]
                     self.new_room()
                 case 'Closed_chest':
                     self.player.inventory.append(random.choice(self.chest_rewards))
-                    self.all_game_objects[object_key] = Game_object(self.all_game_objects[object_key].maze_pos,'Open_chest',filename="0x72_16x16DungeonTileset.v5/items/chest_open_empty.png")
-                    self.server.data['game_objects'][object_key]['file_name'] = 'chest_open_empty'
-                    self.server.data['game_objects'][object_key]['type'] = 'Open_chest'
+                    self.all_game_objects[object_key] = Game_object(self.all_game_objects[object_key].maze_pos,'Open_chest',filename="chest_open_empty")
+                    if self.server:
+                        self.server.data['game_objects'][object_key]['file_name'] = 'chest_open_empty'
+                        self.server.data['game_objects'][object_key]['type'] = 'Open_chest'
                     
     def save_game(self):
         with open('Adventurer/game/saved_game_objects.json','w') as write_file:
@@ -236,11 +237,12 @@ class Master:
                     'type':object.type,
                     'maze_pos':object.maze_pos,
                     'path':object.path,
-                    'file_name':self.strip_file_name(object.file_name),
+                    'file_name':object.file_name,
                     'name':object.name,
                     'tile_pos':object.tile_pos
                 }
-            write_file.write(json.dumps(all_game_objects_data))
+            save_data = {'inventory':self.player.inventory,'game_objects':all_game_objects_data}
+            write_file.write(json.dumps(save_data))
     
     def start_game(self):
         done = False

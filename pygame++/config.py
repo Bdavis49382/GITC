@@ -12,6 +12,8 @@ DEFAULT_POS = (MAP_COLUMNS//2,MAP_ROWS//2)
 
 TEXTURE_REFERENCE = "0x72_16x16DungeonTileset.v5/items/{0}.png"
 
+MAP_KEY = {'floor':'floor_plain','wall':'wall_left'}
+
 BLACK = ( 0, 0, 0)
 GRAY = (100,100,100)
 WHITE = ( 255, 255, 255)

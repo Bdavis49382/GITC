@@ -1,6 +1,9 @@
 import pygame
 from UI.label import Label
 from constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH, GRAY,MAP_COLUMNS,MAP_ROWS,WHITE,BLACK,RED
+import sys
+sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
+from tilemap import Tilemap
 
 class UI:
     pygame.init()
@@ -9,10 +12,11 @@ class UI:
         pygame.display.set_caption("GITC")
         self.master = master
         self.map = []
+        self.background_tile_map = Tilemap(self._screen,self.map)
     
     def refresh_start_screen(self):
         self._screen.fill(GRAY)
-        self.draw_background(100)
+        self.background_tile_map.draw_tiles(100)
 
         title = Label(self._screen,'Welcome Adventurer',0)
 
@@ -28,7 +32,7 @@ class UI:
     def refresh_screen(self,sprites_list,game_state):
         self._screen.fill(GRAY)
 
-        self.draw_background()
+        self.background_tile_map.draw_tiles()
         self.draw_footer()
 
         sprites_list.update()
@@ -39,7 +43,8 @@ class UI:
     
     def refresh_game_over_screen(self):
         self._screen.fill(GRAY)
-        self.draw_background()
+        
+        self.background_tile_map.draw_tiles(100)
         
         title= Label(self._screen,'Game Over',0)
 
@@ -49,7 +54,7 @@ class UI:
     
     def refresh_pause_screen(self):
         self._screen.fill(GRAY)
-        self.draw_background(180)
+        self.background_tile_map.draw_tiles(180)
 
         title = Label(self._screen,'Paused',0,50)
 
@@ -74,8 +79,6 @@ class UI:
         mouse = pygame.mouse.get_pos()
         return SCREEN_WIDTH//2-50 <= mouse[0] <= SCREEN_WIDTH//2+50 and SCREEN_HEIGHT//2+90 <= mouse[1] <= SCREEN_HEIGHT//2+110
 
-        
-
     def draw_footer(self):
         font = pygame.font.Font('freesansbold.ttf', 20)
         text = font.render(f'Inventory:{",".join(self.master.player.inventory)}', True, WHITE, BLACK)
@@ -83,17 +86,3 @@ class UI:
         textRect.left = 10
         textRect.top = TILE_SIZE*MAP_ROWS
         self._screen.blit(text, textRect)
-
-    def draw_background(self,opacity = 255):
-        tiles = {
-            'floor': pygame.image.load('0x72_16x16DungeonTileset.v5/items/floor_plain.png').convert_alpha(),
-            'wall': pygame.image.load('0x72_16x16DungeonTileset.v5/items/wall_left.png').convert_alpha()
-        }
-
-        for key in tiles:
-            tiles[key] = pygame.transform.scale(tiles[key], (TILE_SIZE,TILE_SIZE))
-            tiles[key].set_alpha(opacity)
-        
-        for y in range(MAP_ROWS):
-            for x in range(MAP_COLUMNS):
-                self._screen.blit(tiles[self.map[y][x]],(x*TILE_SIZE,y*TILE_SIZE))
