@@ -1,7 +1,9 @@
 from UI.ui import UI
 from game.game_object import Game_object
 from game.player import Player
-from game.client import Client
+import sys
+sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
+from client import Client
 from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS,ITEM_FILE_PATH
 import random
 import json

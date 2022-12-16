@@ -1,8 +1,10 @@
 from UI.ui import UI
 from game.game_object import Game_object
 from game.player import Player
-from game.server import Server
-from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS
+import sys
+sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
+from server import Server
+from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS,DEFAULT_POS,TEXTURE_REFERENCE
 import copy
 import random
 import json
@@ -18,7 +20,7 @@ class Master:
         self.current_sprites_list = pygame.sprite.Group()
         self.all_game_objects = {}
         self.load_game_objects()
-        
+
         self.chest_rewards = ['Bomb','Torch']
         self.clock = 0
 
@@ -27,16 +29,21 @@ class Master:
     def load_game_objects(self):
         for object_key in self.saved_game_objects:
             object = self.saved_game_objects[object_key]
+            if 'tile_pos' in object:
+                pos = object['tile_pos']
+                print(pos)
+            else:
+                pos = DEFAULT_POS
             if object['type'] == 'Player':
-                self.all_game_objects[object_key] = Player(object['maze_pos'],self)
+                self.all_game_objects[object_key] = Player(object['maze_pos'],self,pos=pos)
                 self.player = self.all_game_objects[object_key]
             elif object['type'] == 'Item':
-                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],name=object['name'],filename=TEXTURE_REFERENCE.format(object['file_name']))
             else:
                 if 'path' in object:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=TEXTURE_REFERENCE.format(object['file_name']))
                 else:
-                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=f"0x72_16x16DungeonTileset.v5/items/{object['file_name']}.png")
+                    self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=TEXTURE_REFERENCE.format(object['file_name']))
             
             if object['maze_pos'] == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
@@ -72,6 +79,12 @@ class Master:
         if self.clock == 3:
             self.spawn_demon()
 
+        self.move_objects_along_paths()                
+
+        self.map = room
+        self.GUI.map = room
+    
+    def move_objects_along_paths(self):
         for object_key in self.all_game_objects:
             object = self.all_game_objects[object_key]
             if len(object.path) > 0 and object.maze_pos != self.player.maze_pos:
@@ -85,12 +98,12 @@ class Master:
                         self.server.data['game_objects'][object_key]['maze_pos'] = object.maze_pos
                     else:
                         self.server.data['game_objects'][object_key] = {'type':object.type,
-                                                                'file_name':'monster_demon',
+                                                                'file_name':self.strip_file_name(object.file_name),
                                                                 'maze_pos':object.maze_pos,
                                                                 'path':object.path} #might have bug later with objects that don't have a path but will work for now.
-                        
-        self.map = room
-        self.GUI.map = room
+
+    def strip_file_name(self,full_file_name):
+        return full_file_name[full_file_name.rfind('/')+1:full_file_name.rfind('.')]
 
     def spawn_demon(self):
         self.all_game_objects['demon'] = Game_object([0,0],'Enemy',path=self.player.path_taken,filename="0x72_16x16DungeonTileset.v5/items/monster_demon.png")
@@ -113,7 +126,8 @@ class Master:
             match event.type:
                 case pygame.QUIT:
                     done = True
-                    self.server.data['still_running'] = False
+                    if self.server:
+                        self.server.data['still_running'] = False
                 case pygame.KEYDOWN:
                     match event.key:
                         case pygame.K_x:
@@ -138,7 +152,7 @@ class Master:
                             done = True
                             if self.server:
                                 self.server.data['still_running'] = False
-                                self.save_game()
+                            self.save_game()
                         elif self.GUI.clicked_button3():
                             self.game_state = 'normal'
                     elif self.game_state == 'start':
@@ -215,7 +229,18 @@ class Master:
                     
     def save_game(self):
         with open('Adventurer/game/saved_game_objects.json','w') as write_file:
-            write_file.write(json.dumps(self.server.data['game_objects']))
+            all_game_objects_data = {}
+            for object_key in self.all_game_objects:
+                object = self.all_game_objects[object_key]
+                all_game_objects_data[object_key] = {
+                    'type':object.type,
+                    'maze_pos':object.maze_pos,
+                    'path':object.path,
+                    'file_name':self.strip_file_name(object.file_name),
+                    'name':object.name,
+                    'tile_pos':object.tile_pos
+                }
+            write_file.write(json.dumps(all_game_objects_data))
     
     def start_game(self):
         done = False

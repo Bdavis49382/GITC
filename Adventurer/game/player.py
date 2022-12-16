@@ -1,12 +1,13 @@
 from game.game_object import Game_object
-from constants import TILE_SIZE,ENTRANCE,MAP_ROWS,MAP_COLUMNS
+from constants import TILE_SIZE,ENTRANCE,DEFAULT_POS,TEXTURE_REFERENCE
 import pygame
 
 class Player(Game_object):
 
-    def __init__(self,maze_pos,master,pos=(MAP_COLUMNS//2,MAP_ROWS//2)) -> None:
+    def __init__(self,maze_pos,master,pos=DEFAULT_POS) -> None:
         super().__init__(maze_pos,'Player')
-        self.image = pygame.image.load("0x72_16x16DungeonTileset.v5/items/npc_elf.png").convert_alpha()
+        self.file_name = TEXTURE_REFERENCE.format('npc_elf')
+        self.image = pygame.image.load(self.file_name).convert_alpha()
         self.image = pygame.transform.scale(self.image, (TILE_SIZE,TILE_SIZE))
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]*TILE_SIZE

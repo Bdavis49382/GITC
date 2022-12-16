@@ -1,5 +1,4 @@
 
-
 TILE_SIZE = 64
 
 MAP_COLUMNS = 12
