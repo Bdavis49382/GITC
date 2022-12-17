@@ -1,9 +1,10 @@
 import pygame
-from constants import SCREEN_HEIGHT,SCREEN_WIDTH,WHITE,BLACK
+from config import SCREEN_HEIGHT,SCREEN_WIDTH,WHITE,BLACK
 
 class Label:
 
     def __init__(self,screen,text,pos,size = 50,color = WHITE) -> None:
+        self.text = text
         self.font = pygame.font.Font('freesansbold.ttf', size)
         self.label_text = self.font.render(text, True, color, BLACK)
         self.textRect = self.label_text.get_rect()

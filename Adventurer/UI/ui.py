@@ -22,6 +22,8 @@ class UI:
 
         if game_state == 'normal':
             self.background_tile_map.draw_tiles()
+            self.menu_screen = None
+
             self.draw_footer()
 
             sprites_list.update()
@@ -35,7 +37,7 @@ class UI:
             self.menu_screen = Menu_screen(self._screen,'Paused',['Start Server','Save and Exit','Continue'])
         elif game_state == 'game_over':
             self.background_tile_map.draw_tiles(100)
-            self.menu_screen = Menu_screen(self._screen,'Game Over',['Respawn'])
+            self.menu_screen = Menu_screen(self._screen,'Game Over',['Respawn','Exit'])
 
         pygame.display.flip()
     

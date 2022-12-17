@@ -53,17 +53,6 @@ class Master:
             if object['maze_pos'] == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
 
-    
-    def launch_server(self):
-        self.server = Server({
-            'rooms':self.rooms,
-            'room':self.room,
-            'maze':self.maze,
-            'game_objects': self.saved_game_objects,
-            'still_running':True}
-            )
-        self.server.launch()
-
     def load_files(self):
         with open('Adventurer/UI/rooms.json','r') as room_file:
             rooms = json.load(room_file)
@@ -101,19 +90,12 @@ class Master:
                 if object_key in self.server.data['game_objects']:
                     self.server.data['game_objects'][object_key]['maze_pos'] = object.maze_pos
                 else:
-                    self.server.data['game_objects'][object_key] = {'type':object.type,
-                                                            'file_name':object.file_name,
-                                                            'maze_pos':object.maze_pos,
-                                                            'path':object.path} #might have bug later with objects that don't have a path but will work for now.
+                    self.server.data['game_objects'][object_key] = object.to_dict()
 
     def spawn_demon(self):
         self.all_game_objects['demon'] = Game_object([0,0],'Enemy',path=self.player.path_taken,filename="monster_demon")
-        self.server.data['game_objects']['demon'] = {
-            'type':'Enemy',
-            'file_name':'monster_demon',
-            'maze_pos':[0,0],
-            'path':self.player.path_taken}
-    
+        self.server.data['game_objects']['demon'] = self.all_game_objects['demon'].to_dict()
+
     def make_doors(self,room,entrances):
         for entrance in entrances:
             x,y = ENTRANCE[entrance]
@@ -142,26 +124,24 @@ class Master:
                         case pygame.K_ESCAPE:
                             self.game_state = 'paused' if self.game_state != 'paused' else 'normal'
                 case pygame.MOUSEBUTTONDOWN:
-                    if self.GUI.menu_screen.clicked_button() == 0 and self.game_state == 'game_over':
-                        self.restart_game()
-                    elif self.game_state == 'paused':
+                    if self.GUI.menu_screen:
                         match self.GUI.menu_screen.clicked_button():
-                            case 0:
-                                self.launch_server()
-                            case 1:
+                            case 'Respawn':
+                                self.restart_game()
+                            case 'Start Server':
+                                self.server.launch()
+                            case 'Save and Exit':
                                 done = True
                                 self.server.data['still_running'] = False
                                 self.save_game()
-                            case 2:
+                            case 'Continue':
                                 self.game_state = 'normal'
-                    elif self.game_state == 'start':
-                        match self.GUI.menu_screen.clicked_button():
-                            case 0:
+                            case 'Start Game':
                                 self.game_state = 'normal'
-                            case 1:
+                            case 'Load Previous Game':
                                 self.load_game()
                                 self.game_state = 'normal'
-                            case 2:
+                            case 'Exit':
                                 done = True
         return done
     
@@ -210,22 +190,14 @@ class Master:
                 case 'Closed_chest':
                     self.player.inventory.append(random.choice(self.chest_rewards))
                     self.all_game_objects[object_key] = Game_object(self.all_game_objects[object_key].maze_pos,'Open_chest',filename="chest_open_empty")
-                    self.server.data['game_objects'][object_key]['file_name'] = 'chest_open_empty'
-                    self.server.data['game_objects'][object_key]['type'] = 'Open_chest'
+                    self.server.data['game_objects'][object_key] = self.all_game_objects[object_key].to_dict()
                     
     def save_game(self):
         with open('Adventurer/game/saved_game_objects.json','w') as write_file:
             all_game_objects_data = {}
             for object_key in self.all_game_objects:
                 object = self.all_game_objects[object_key]
-                all_game_objects_data[object_key] = {
-                    'type':object.type,
-                    'maze_pos':object.maze_pos,
-                    'path':object.path,
-                    'file_name':object.file_name,
-                    'name':object.name,
-                    'tile_pos':object.tile_pos
-                }
+                all_game_objects_data[object_key] = object.to_dict()
             save_data = {'inventory':self.player.inventory,'game_objects':all_game_objects_data}
             write_file.write(json.dumps(save_data))
     

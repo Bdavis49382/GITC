@@ -12,5 +12,15 @@ class Game_object(Node):
         self.file_name = filename
         self.path = path
         self.path_pos = 0
+    
+    def to_dict(self):
+        return {
+            'type':self.type,
+            'file_name':self.file_name,
+            'maze_pos':self.maze_pos,
+            'path':self.path,
+            'name':self.name,
+            'tile_pos':self.tile_pos
+        }
 
 
