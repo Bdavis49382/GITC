@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "pygame",
+        "Respawn",
+        "tilemap"
+    ],
+    "python.analysis.extraPaths": [
+        "./pygame++"
+    ]
+}

@@ -6,15 +6,8 @@ import pygame
 class Player(Game_object):
 
     def __init__(self,maze_pos,master,pos=DEFAULT_POS) -> None:
-        super().__init__(maze_pos,'Player')
-        self.file_name = TEXTURE_REFERENCE.format('npc_elf')
-        self.image = pygame.image.load(self.file_name).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (TILE_SIZE,TILE_SIZE))
-        self.rect = self.image.get_rect()
-        self.rect.x = pos[0]*TILE_SIZE
-        self.rect.y = pos[1]*TILE_SIZE
+        super().__init__(maze_pos,'Player',filename='npc_elf',pos=pos)
         self.master = master
-        self.maze_pos = maze_pos
         self.inventory = []
         self.path_taken = [self.maze_pos]
     

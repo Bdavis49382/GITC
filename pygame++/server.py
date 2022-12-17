@@ -20,8 +20,11 @@ class Server():
     def __init__(self,data) -> None:
         self.data = data
         self.conn = None
+    
+    def launch(self):
         thread = threading.Thread(target=self.start)
         thread.start()
+
 
 
     def handle_client(self,conn, addr):

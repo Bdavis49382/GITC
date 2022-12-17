@@ -9,10 +9,7 @@ class Game_object(Node):
 
         super().__init__(type,tile_pos = [maze_pos[0] * MAP_COLUMNS + pos + 1,maze_pos[1] * MAP_ROWS + MAP_ROWS//2],filename=filename,tile_size=TILE_SIZE)
 
-        self.pos = pos
-
-        # self.rect.x = maze_pos[0]*TILE_SIZE * MAP_COLUMNS + TILE_SIZE + pos * TILE_SIZE
-        # self.rect.y = maze_pos[1]*TILE_SIZE * MAP_ROWS + MAP_ROWS * TILE_SIZE//2 
+        self.pos = pos # position in the room. Either 0, 1, or 2
 
     def update_maze_pos(self,new_maze_pos):
         self.maze_pos = new_maze_pos
