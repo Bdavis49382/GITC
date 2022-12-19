@@ -17,9 +17,10 @@ server.bind(ADDR)
 class Server():
 
 
-    def __init__(self,data) -> None:
+    def __init__(self,data,clients_expected=1) -> None:
         self.data = data
         self.conn = None
+        self.clients_expected = clients_expected
     
     def launch(self):
         thread = threading.Thread(target=self.start)
@@ -57,10 +58,12 @@ class Server():
 
     def start(self):
         server.listen()
+        clients_accepted = 0
         print(f"[LISTENING] Server is listening on {SERVER} ")
-        # while True:
-        self.conn, addr = server.accept()
-        thread = threading.Thread(target=self.handle_client, args=(self.conn, addr))
-        thread.start()
+        while clients_accepted < self.clients_expected:
+            self.conn, addr = server.accept()
+            thread = threading.Thread(target=self.handle_client, args=(self.conn, addr))
+            thread.start()
+            clients_accepted += 1
                 
 

@@ -4,7 +4,7 @@ from game.player import Player
 import sys
 sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
 from server import Server
-from constants import ENTRANCE,MAP_COLUMNS,MAP_ROWS,DEFAULT_POS,TEXTURE_REFERENCE
+from constants import ENTRANCE,DEFAULT_POS
 import copy
 import random
 import json
