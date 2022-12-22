@@ -1,50 +1,64 @@
 {
-    "player": {
-        "type":"Player",
-        "file_name": "npc_elf",
-        "maze_pos":[0,0]
-    },
-    "black_knight1": {
-        "type":"Enemy",
-        "file_name": "monster_dark_knight",
-        "maze_pos":[3,3],
-        "path":[[3,3],[3,2]]
-    },
-    "ogre1": {
-        "type":"Enemy",
-        "file_name": "monster_ogre",
-        "maze_pos":[1,1],
-        "path":[[1,1],[1,2],[0,2],[0,1]]
-    },
-    "tentackle1": {
-        "type":"Enemy",
-        "file_name":  "monster_tentackle",
-        "maze_pos":[0,4]
-    },
-    "necromancer1": {
-        "type":"Enemy",
-        "file_name": "monster_necromancer",
-        "maze_pos":[4,3]
-    },
-    "necromancer2": {
-        "type":"Enemy",
-        "file_name": "monster_necromancer",
-        "maze_pos":[0,3]
-    },
-    "stairs": {
-        "type":"Stairs",
-        "file_name":"stairs_mid",
-        "maze_pos":[4,4]
-    },
-    "sword1": {
-        "type":"Item",
-        "file_name":"weapon_sword_small",
-        "maze_pos":[4,2],
-        "name":"Wooden Sword"
-    },
-    "chest1": {
-        "type":"Closed_chest",
-        "file_name":"chest_closed",
-        "maze_pos":[2,0]
+    "levels": [{
+        "player": {
+            "type":"Player",
+            "file_name": "npc_elf",
+            "maze_pos":[0,0]
+        },
+        "chest1": {
+            "type":"Closed_chest",
+            "file_name":"chest_closed",
+            "maze_pos":[1,0]
+        },
+        "black_knight1": {
+            "type":"Enemy",
+            "file_name": "monster_dark_knight",
+            "maze_pos":[3,3],
+            "path":[[3,3],[3,2]]
+        },
+        "ogre1": {
+            "type":"Enemy",
+            "file_name": "monster_ogre",
+            "maze_pos":[1,1],
+            "path":[[1,1],[1,2],[0,2],[0,1]]
+        },
+        "tentackle1": {
+            "type":"Enemy",
+            "file_name":  "monster_tentackle",
+            "maze_pos":[0,4]
+        },
+        "necromancer1": {
+            "type":"Enemy",
+            "file_name": "monster_necromancer",
+            "maze_pos":[4,3]
+        },
+        "necromancer2": {
+            "type":"Enemy",
+            "file_name": "monster_necromancer",
+            "maze_pos":[0,3]
+        },
+        "stairs": {
+            "type":"Stairs",
+            "file_name":"stairs_mid",
+            "maze_pos":[4,4]
+        },
+        "sword1": {
+            "type":"Item",
+            "file_name":"weapon_sword_small",
+            "maze_pos":[4,2],
+            "name":"Wooden Sword"
+        },
+        "chest2": {
+            "type":"Closed_chest",
+            "file_name":"chest_closed",
+            "maze_pos":[2,0]
+        }
+    },{
+        "player": {
+            "type":"Player",
+            "file_name":"npc_elf",
+            "maze_pos":[3,1]
+        }
     }
+    ]
 }

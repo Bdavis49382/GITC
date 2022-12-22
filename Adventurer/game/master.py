@@ -15,26 +15,32 @@ class Master:
     def __init__(self) -> None:
         self.load_files()
         self.game_state = 'start'
+        self.game_level = 0
         self.server = Server({
             'rooms':self.rooms,
             'room':self.room,
-            'maze':self.maze,
-            'game_objects': self.saved_game_objects,
-            'still_running':True}
+            'mazes':self.mazes,
+            'game_objects': self.game_objects_by_level[0],
+            'still_running':True,
+            'level':0}
             )
-        self.GUI = UI(self)
         self.current_sprites_list = pygame.sprite.Group()
-        self.all_game_objects = {}
+        self.GUI = UI(self)
         self.load_game_objects()
+        self.GUI.make_screens(self.current_sprites_list)
 
         self.chest_rewards = ['Bomb','Torch']
         self.clock = 0
 
+
         self.new_room()
     
-    def load_game_objects(self):
-        for object_key in self.saved_game_objects:
-            object = self.saved_game_objects[object_key]
+    def load_game_objects(self,saved_game_objects=None):
+        self.all_game_objects = {}
+        if not saved_game_objects:
+            saved_game_objects = self.game_objects_by_level[self.game_level]
+        for object_key in saved_game_objects:
+            object = saved_game_objects[object_key]
             if 'tile_pos' in object:
                 pos = object['tile_pos']
             else:
@@ -49,9 +55,10 @@ class Master:
                     self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],path=object['path'],filename=object['file_name'])
                 else:
                     self.all_game_objects[object_key] = Game_object(object['maze_pos'],object['type'],filename=object['file_name'])
-            
             if object['maze_pos'] == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
+        
+        self.server.data['game_objects'] = self.game_objects_by_level[self.game_level]
 
     def load_files(self):
         with open('Adventurer/UI/rooms.json','r') as room_file:
@@ -60,14 +67,14 @@ class Master:
         with open('Adventurer/game/big_map.json','r') as map_file:
             data = json.load(map_file)
             self.room = data['room']
-            self.maze = data['maze']
+            self.mazes = data['mazes']
         with open('Adventurer/game/game_objects.json','r') as objects_file:
-            self.saved_game_objects = json.load(objects_file)
+            self.game_objects_by_level = json.load(objects_file)["levels"]
 
     def new_room(self):
         room = copy.deepcopy(random.choice(self.rooms))
         self.player.path_taken.append(copy.deepcopy(self.player.maze_pos))
-        self.make_doors(room,self.maze[self.player.maze_pos[1]][self.player.maze_pos[0]].split(','))
+        self.make_doors(room,self.mazes[self.game_level][self.player.maze_pos[1]][self.player.maze_pos[0]].split(','))
         self.server.data['game_objects']['player']['maze_pos'] = self.player.maze_pos
         self.clock += 1
         if self.clock == 3:
@@ -124,32 +131,31 @@ class Master:
                         case pygame.K_ESCAPE:
                             self.game_state = 'paused' if self.game_state != 'paused' else 'normal'
                 case pygame.MOUSEBUTTONDOWN:
-                    if self.GUI.menu_screen:
-                        match self.GUI.menu_screen.clicked_button():
-                            case 'Respawn':
-                                self.restart_game()
-                            case 'Start Server':
-                                self.server.launch()
-                            case 'Save and Exit':
-                                done = True
-                                self.server.data['still_running'] = False
-                                self.save_game()
-                            case 'Continue':
-                                self.game_state = 'normal'
-                            case 'Start Game':
-                                self.game_state = 'normal'
-                            case 'Load Previous Game':
-                                self.load_game()
-                                self.game_state = 'normal'
-                            case 'Exit':
-                                done = True
+                    match self.GUI.game_screens[self.game_state].clicked_button():
+                        case 'Respawn':
+                            self.restart_game()
+                        case 'Start Server':
+                            self.server.launch()
+                        case 'Save and Exit':
+                            done = True
+                            self.server.data['still_running'] = False
+                            self.save_game()
+                        case 'Continue':
+                            self.game_state = 'normal'
+                        case 'Start Game':
+                            self.game_state = 'normal'
+                        case 'Load Previous Game':
+                            self.load_game()
+                            self.game_state = 'normal'
+                        case 'Exit':
+                            done = True
         return done
     
     def load_game(self):
         with open('Adventurer/game/saved_game_objects.json') as save_file:
             saved_data = json.load(save_file)
-            self.saved_game_objects = saved_data['game_objects']
-            self.load_game_objects()
+            # self.saved_game_objects = saved_data['game_objects']
+            self.load_game_objects(saved_game_objects=saved_data['game_objects'])
             self.new_room()
             self.player.inventory = saved_data['inventory']
     
@@ -157,7 +163,8 @@ class Master:
         self.load_files()
         self.all_game_objects = {}
         self.load_game_objects()
-        self.server.data['game_objects']['demon']['maze_pos'] = [-1 ,-1]
+        if 'demon' in self.server.data['game_objects']:
+            self.server.data['game_objects']['demon']['maze_pos'] = [-1 ,-1]
         
         self.game_state = 'normal'
         self.chest_rewards = ['Bomb','Torch']
@@ -169,7 +176,9 @@ class Master:
         for object_key in self.all_game_objects:
             if self.all_game_objects[object_key].maze_pos == self.player.maze_pos:
                 self.current_sprites_list.add(self.all_game_objects[object_key])
-                self.handle_collisions(object_key)
+                if self.handle_collisions(object_key):
+                    break
+        self.GUI.game_screens['normal'].sprites = self.current_sprites_list
 
     def handle_collisions(self,object_key):
         if object_key != 'Player' and self.all_game_objects[object_key].tile_pos == self.player.tile_pos:
@@ -185,8 +194,8 @@ class Master:
                     self.server.data['game_objects'][object_key]['maze_pos'] = [-1,-1]
                 case 'Stairs':
                     print('You have made it to the next level')
-                    self.player.maze_pos = [ 0 , 0]
-                    self.new_room()
+                    self.next_level()
+                    return True
                 case 'Closed_chest':
                     self.player.inventory.append(random.choice(self.chest_rewards))
                     self.all_game_objects[object_key] = Game_object(self.all_game_objects[object_key].maze_pos,'Open_chest',filename="chest_open_empty")
@@ -201,6 +210,13 @@ class Master:
             save_data = {'inventory':self.player.inventory,'game_objects':all_game_objects_data}
             write_file.write(json.dumps(save_data))
     
+    def next_level(self):
+        self.game_level += 1
+        self.load_game_objects()
+        self.server.data['level'] += 1
+        self.server.data['game_objects'] = self.game_objects_by_level[self.game_level]
+        self.new_room()
+    
     def start_game(self):
         done = False
         clock = pygame.time.Clock()
@@ -209,7 +225,7 @@ class Master:
             done = self.detect_events(pygame.event.get())
             if self.game_state == 'normal':
                 self.update_sprites_list()
-            self.GUI.refresh_screen(self.current_sprites_list,self.game_state)
+            self.GUI.game_screens[self.game_state].draw()
             
             clock.tick(60)
         pygame.quit()

@@ -13,6 +13,9 @@ ADDR = (SERVER, PORT)
 class Client():
     def __init__(self) -> None:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connect_via_terminal()
+    
+    def connect_via_terminal(self):
         try:
             with open('pygame++/saved_servers.csv','r') as saved_servers:
                 servers = csv.reader(saved_servers)
@@ -40,6 +43,7 @@ class Client():
                 server_name = input("what would you like to call this server?")
                 write_file.write(f'{response},{server_name}')
             self.client.connect((response, PORT))
+    
 
     def send(self,msg):
         message = msg.encode(FORMAT)

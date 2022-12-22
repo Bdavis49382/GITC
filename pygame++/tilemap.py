@@ -22,7 +22,7 @@ class Tilemap:
         self._load_tiles()
     
         
-    def draw_tiles(self,opacity=255):
+    def draw(self,opacity=255):
         """Actually draw the tilemap to the screen, optionally specify an opacity less than 255"""
 
         if self.opacity != opacity:

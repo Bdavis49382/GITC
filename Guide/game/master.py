@@ -13,8 +13,9 @@ class Master:
 
     def __init__(self) -> None:
         self.client = Client()
-        self.GUI = UI(self,self.client)
+        self.game_level = 0
         self.all_sprites_list = pygame.sprite.Group()
+        self.GUI = UI(self,self.all_sprites_list,self.client)
         server_game_objects = self.client.send('rqst,game_objects')
         self.all_game_objects = {}
         for object_key in server_game_objects:
@@ -59,6 +60,11 @@ class Master:
 
         return done
     
+    def update_sprite_list(self):
+        self.all_sprites_list = pygame.sprite.Group()
+        for object_key in self.all_game_objects:
+            self.all_sprites_list.add(self.all_game_objects[object_key])
+
 
 
     def start_game(self):
@@ -66,7 +72,8 @@ class Master:
 
         while not self.done:
             self.done = self.detect_events(pygame.event.get())
-            self.GUI.refresh_screen(self.all_sprites_list)
+            self.update_sprite_list()
+            self.GUI.game_screen.draw()
             self.update_values()
 
             clock.tick(30)
@@ -75,7 +82,14 @@ class Master:
     
     def update_values(self):
         if self.client.send('rqst,still_running'):
+            level = self.client.send('rqst,level')
+            if level>self.game_level:
+                self.all_game_objects = {}
+                self.game_level = level
+                
+
             server_game_objects = self.client.send('rqst,game_objects')
+            
 
             for object_key in server_game_objects:
                 if object_key in self.all_game_objects:

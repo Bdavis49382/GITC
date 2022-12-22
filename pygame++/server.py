@@ -21,6 +21,7 @@ class Server():
         self.data = data
         self.conn = None
         self.clients_expected = clients_expected
+        self.clients_accepted = 0
     
     def launch(self):
         thread = threading.Thread(target=self.start)
@@ -40,12 +41,15 @@ class Server():
                 if msg == DISCONNECT_MESSAGE:
                     print("Other player disconnected")
                     connected = False
+                    self.clients_accepted -= 1
                 elif 'rqst' in msg:
-                    self.send(json.dumps(self.data[msg.split(',')[1]]),conn)
+                    try:
+                        self.send(json.dumps(self.data[msg.split(',')[1]]),conn)
+                    except KeyError:
+                        print('an invalid request was sent')
                 else:
                     print(msg)
                 
-        
         conn.close()
 
     def send(self,msg, conn):
@@ -58,12 +62,11 @@ class Server():
 
     def start(self):
         server.listen()
-        clients_accepted = 0
         print(f"[LISTENING] Server is listening on {SERVER} ")
-        while clients_accepted < self.clients_expected:
+        while self.clients_accepted < self.clients_expected:
             self.conn, addr = server.accept()
             thread = threading.Thread(target=self.handle_client, args=(self.conn, addr))
             thread.start()
-            clients_accepted += 1
+            self.clients_accepted += 1
                 
 
