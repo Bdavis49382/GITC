@@ -3,7 +3,7 @@ from game.game_object import Game_object
 from game.player import Player
 import sys
 sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
-from server import Server
+from multiplayer.server import Server
 from constants import ENTRANCE,DEFAULT_POS
 import copy
 import random
@@ -32,6 +32,11 @@ class Master:
         self.chest_rewards = ['Bomb','Torch']
         self.clock = 0
 
+        self.keyboard_map = {
+            pygame.K_a:'left',
+            pygame.K_s:'down',
+            pygame.K_d:'right',
+            pygame.K_w:'up'}
 
         self.new_room()
     
@@ -117,19 +122,16 @@ class Master:
                     done = True
                     self.server.data['still_running'] = False
                 case pygame.KEYDOWN:
-                    match event.key:
-                        case pygame.K_x:
-                            done = True
-                        case pygame.K_a:
-                            player.move_left(self.map)
-                        case pygame.K_d:
-                            player.move_right(self.map)
-                        case pygame.K_w:
-                            player.move_up(self.map)
-                        case pygame.K_s:
-                            player.move_down(self.map)
-                        case pygame.K_ESCAPE:
-                            self.game_state = 'paused' if self.game_state != 'paused' else 'normal'
+                    if event.key in self.keyboard_map:
+                        player.current_direction = self.keyboard_map[event.key]
+                        player.move(self.map)
+                    elif event.key == pygame.K_ESCAPE:
+                        self.game_state = 'paused' if self.game_state != 'paused' else 'normal'
+                case pygame.KEYUP:
+                    if event.key in self.keyboard_map:
+                        if self.keyboard_map[event.key] == player.current_direction:
+                            player.current_direction = 'none'
+
                 case pygame.MOUSEBUTTONDOWN:
                     match self.GUI.game_screens[self.game_state].clicked_button():
                         case 'Respawn':
@@ -226,6 +228,7 @@ class Master:
             if self.game_state == 'normal':
                 self.update_sprites_list()
             self.GUI.game_screens[self.game_state].draw()
+            # self.player.move(self.map)
             
             clock.tick(60)
         pygame.quit()

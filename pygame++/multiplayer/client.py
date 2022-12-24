@@ -1,6 +1,7 @@
 import socket
 import json
 import csv
+from config import SAVED_SERVERS
 
 HEADER = 64
 PORT = 5050
@@ -17,7 +18,7 @@ class Client():
     
     def connect_via_terminal(self):
         try:
-            with open('pygame++/saved_servers.csv','r') as saved_servers:
+            with open(SAVED_SERVERS,'r') as saved_servers:
                 servers = csv.reader(saved_servers)
                 addresses = []
                 option = 1
@@ -32,14 +33,14 @@ class Client():
                         self.client.connect((addresses[int(response)-1], PORT))
                     else:
                         server_name = input("what would you like to call this server?")
-                        with open('pygame++/saved_servers.csv','a') as write_file:
+                        with open(SAVED_SERVERS,'a') as write_file:
                             write_file.write(f'\n{response},{server_name}')
                         self.client.connect((response, PORT))
                 except:
                     print('there was an issue connecting')
         except FileNotFoundError:
             response = input("You have no saved ip addresses.\nPlease enter your server's ip address\n>")
-            with open('pygame++/saved_servers.csv','w') as write_file:
+            with open(SAVED_SERVERS,'w') as write_file:
                 server_name = input("what would you like to call this server?")
                 write_file.write(f'{response},{server_name}')
             self.client.connect((response, PORT))

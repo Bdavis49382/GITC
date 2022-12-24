@@ -1,11 +1,10 @@
-import json
 import pygame
 import copy
 from constants import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH, GRAY,MAP_COLUMNS,MAP_ROWS,GRID_COLUMNS,GRID_ROWS,ENTRANCE
 import sys
 sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
-from tilemap import Tilemap
-from game_screen import Game_screen
+from components.tilemap import Tilemap
+from screens.game_screen import Game_screen
 
 class UI:
     pygame.init()

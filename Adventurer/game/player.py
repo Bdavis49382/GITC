@@ -10,6 +10,13 @@ class Player(Game_object):
         self.master = master
         self.inventory = []
         self.path_taken = [self.maze_pos]
+        self.current_direction = 'none'
+        self.directions = {
+            'up':[0,-1],
+            'right':[1,0],
+            'left':[-1,0],
+            'down':[0,1]
+        }
     
     
     def will_collide(self,pos,map):
@@ -41,25 +48,12 @@ class Player(Game_object):
             return True
         else:
             return False
+    
 
-
-    def move_right(self,map):
-        if not self.will_collide((self.tile_pos[0]+1,self.tile_pos[1]),map):
-            self.rect.x += TILE_SIZE
-            self.tile_pos = (self.rect.x//TILE_SIZE,self.rect.y//TILE_SIZE)
-
-    def move_left(self,map):
-        if not self.will_collide((self.tile_pos[0]-1,self.tile_pos[1]),map):
-            self.rect.x -= TILE_SIZE
-            self.tile_pos = (self.rect.x//TILE_SIZE,self.rect.y//TILE_SIZE)
-
-    def move_up(self,map):
-        if not self.will_collide((self.tile_pos[0],self.tile_pos[1]-1),map):
-            self.rect.y -= TILE_SIZE
-            self.tile_pos = (self.rect.x//TILE_SIZE,self.rect.y//TILE_SIZE)
-
-    def move_down(self,map):
-        if not self.will_collide((self.tile_pos[0],self.tile_pos[1]+1),map):
-            self.rect.y += TILE_SIZE
-            self.tile_pos = (self.rect.x//TILE_SIZE,self.rect.y//TILE_SIZE)
-
+    def move(self,map):
+        if self.current_direction != 'none':
+            movement = self.directions[self.current_direction]
+            if not self.will_collide((self.tile_pos[0]+movement[0],self.tile_pos[1]+movement[1]),map):
+                self.rect.x += movement[0] * TILE_SIZE
+                self.rect.y += movement[1] * TILE_SIZE
+                self.tile_pos = (self.tile_pos[0]+movement[0],self.tile_pos[1]+movement[1])

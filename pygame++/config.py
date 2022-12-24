@@ -8,11 +8,15 @@ BOTTOM_MARGIN = 50
 SCREEN_WIDTH = MAP_COLUMNS * TILE_SIZE
 SCREEN_HEIGHT = MAP_ROWS * TILE_SIZE + BOTTOM_MARGIN
 
+GAME_TITLE = 'GITC'
+
 DEFAULT_POS = (MAP_COLUMNS//2,MAP_ROWS//2)
 
 TEXTURE_REFERENCE = "0x72_16x16DungeonTileset.v5/items/{0}.png"
 
 MAP_KEY = {'floor':'floor_plain','wall':'wall_left'}
+
+SAVED_SERVERS = 'pygame++/multiplayer/saved_servers.csv'
 
 BLACK = ( 0, 0, 0)
 GRAY = (100,100,100)

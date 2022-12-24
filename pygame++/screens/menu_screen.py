@@ -1,4 +1,4 @@
-from label import Label
+from components.label import Label
 from config import GRAY
 import pygame
 class Menu_screen:

@@ -2,7 +2,7 @@ from constants import WHITE,TILE_SIZE,MAP_COLUMNS,MAP_ROWS
 import pygame
 import sys
 sys.path.append('C:/Users/Bdude/OneDrive/Desktop/School Code/GITC\pygame++')
-from node import Node
+from components.node import Node
 class Game_object(Node):
 
     def __init__(self,type,maze_pos,pos=0,filename='') -> None:
